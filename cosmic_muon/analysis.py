@@ -35,18 +35,18 @@ using RNode = ROOT::RDF::RNode;
 
 using VecI_t = const ROOT::RVec<int>&;
 using VecF_t = const ROOT::RVec<float>&;
-ROOT::RVec<RVec<int>> getMatchIdx( VecI_t recoID , VecI_t truthID ){
+ROOT::RVec<int> getMatchIdx( VecI_t recoID , VecI_t truthID ){
 
-RVec<RVec<int>> out;
+RVec<int> out;
 
 //
-auto idxs = Combination( recoID , truthID );
+auto idxs = Combinations( recoID , truthID );
 for ( size_t i = 0; i < idxs[0].size(); i++ ) {
 const auto i1 = idxs[0][i];
 const auto i2 = idxs[1][i];
 
 // save the truthID idx if truth's is matched to reco's
-if ( truthID[i1] == recoID[i2] ) out.push_back(i2);
+if ( recoID[i1] == truthID[i2] ) out.push_back(i2);
 
 }
 return out;
@@ -63,8 +63,8 @@ df = df
 
 # only want true particle which ends at TPC
 df = df.Define( 'dx' , 'EndPointx_tpcAV - EndPointx' )\
-       .Define( 'dx' , 'EndPointx_tpcAV - EndPointx' )\
-       .Define( 'dx' , 'EndPointx_tpcAV - EndPointx' )\
+       .Define( 'dy' , 'EndPointx_tpcAV - EndPointx' )\
+       .Define( 'dz' , 'EndPointx_tpcAV - EndPointx' )\
        .Define( 's' , 'dx+dy+dz' )
 
 df = df.Filter( 's > 1e-10' , 'ensure length is within 1e-10' )
