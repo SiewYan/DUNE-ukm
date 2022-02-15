@@ -22,42 +22,38 @@
 #include "TLorentzVector.h"
 
 template < typename T>
-auto getmatchedIdx( T &df ){
+auto getMatchedBit( T &dfin ){
 
   using namespace ROOT::VecOps;
   
-  auto matchIdx(
+  auto matchedBit(
 		RVec<int>& recotrkID,
 		RVec<RVec<int>>& truthtrkID
 		){
-    // save truth Idx
-    RVec<int> matchIdx;
-    auto Idxs = Combinations( recotrkID , truthtrkID );
     
+    auto Idxs = Combinations( recotrkID , truthtrkID );
     const auto rsize = Idxs[0].size();
+
+    // bit1 : 1st matched ; bit2 : 2nd matched ; bit3 : 3rd matched
+    // if all match --> 111 (in binary) => 1+2+4 = 7
+    // (bit1) + 2*(bit2) + 4*(bit3)
+    RVec<int> matchIdxbit;
     for (size_t i = 0 ; i < rsize ; i++ ){
       
       const auto ireco = Idxs[0][i];
       const auto itruth = Idxs[1][i];
       const auto vecplane = truthtrkID[itruth];
       
-      // truth info according to the plane
-      const auto tsize = vecplane.size(); // static length
-      bool ismatch = false;
-      for (size_t j = 0 ; j < tsize ; j++ ){
-	const auto iplane = vecplane[j];
-	
-	// return the whole vector if either value match trackID
-	if ( iplane == recotrkID[ireco] ){
-	  ismatch = true;
-	  break;
-	}
-	
-      } // end loop
-      //
-      if (ismatch) matchIdx = vecplane; // here
-    } // end loop
+      // matching to truth info according to the plane
+      int bit1 = ( recotrkID[ireco] == vecplane[0] ) ? 1 : 0;
+      int bit2 = ( recotrkID[ireco] == vecplane[1] ) ? 1 : 0;
+      int bit3 = ( recotrkID[ireco] == vecplane[2] ) ? 1 : 0;
 
+      matchedBit.push_back( bit1 + 2*(bit2) + 4*(bit3) );
+      
+    }
+    
+    return dfin.Define( "matchedBit" , matchedBit , { "TrackId" , "trkidtruth_pandoraTrack" } );
   }
 
 
@@ -102,6 +98,16 @@ int main(int argc, char **argv) {
     ;
   
   // get the indices of reco track where G4 TrackID match the MC's
-  
+  df = getMatchedBit(df);
 
+  // is this the best plane
+  df = df.Filter( "matchedBit >= 7" , "match all plane" );
+
+  // is this a good track (>= goodTrackHits hits) ?
+  df = df.Filter( "ntrkhits_pandoraTrack > 5" );
+
+  // pdg of MC particle tracked the IDed reco track PDG?
+  df = df.Filter( "abs(pdg) == trkpidpdg_pandoraTrack" ); // length of 3!! 
+
+  // 
 }
