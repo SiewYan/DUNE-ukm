@@ -33,14 +33,30 @@ auto getmatchedIdx( T &df ){
     // save truth Idx
     RVec<int> matchIdx;
     auto Idxs = Combinations( recotrkID , truthtrkID );
-    const auto rsize = Idxs[0].size();
     
+    const auto rsize = Idxs[0].size();
     for (size_t i = 0 ; i < rsize ; i++ ){
-      const auto ireco = Idxs[0];
-      const auto itruth = Idxs[1];
-
+      
+      const auto ireco = Idxs[0][i];
+      const auto itruth = Idxs[1][i];
+      const auto vecplane = truthtrkID[itruth];
+      
+      // truth info according to the plane
+      const auto tsize = vecplane.size(); // static length
+      bool ismatch = false;
+      for (size_t j = 0 ; j < tsize ; j++ ){
+	const auto iplane = vecplane[j];
+	
+	// return the whole vector if either value match trackID
+	if ( iplane == recotrkID[ireco] ){
+	  ismatch = true;
+	  break;
+	}
+	
+      } // end loop
       //
-    }
+      if (ismatch) matchIdx = vecplane; // here
+    } // end loop
 
   }
 
