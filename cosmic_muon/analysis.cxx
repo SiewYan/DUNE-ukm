@@ -21,11 +21,11 @@
 #include "TRandom3.h"
 #include "TLorentzVector.h"
 
-template < typename T>
+template <typename T>
 auto getMatchedBit( T &dfin ){
 
   using namespace ROOT::VecOps;
-  
+
   auto matchedBit(
 		RVec<int>& recotrkID,
 		RVec<RVec<int>>& truthtrkID
@@ -37,7 +37,7 @@ auto getMatchedBit( T &dfin ){
     // bit1 : 1st matched ; bit2 : 2nd matched ; bit3 : 3rd matched
     // if all match --> 111 (in binary) => 1+2+4 = 7
     // (bit1) + 2*(bit2) + 4*(bit3)
-    RVec<int> matchIdxbit;
+    RVec< std::pair< std::pair<int,int> , int > > out; // recoIdx,truthIdx,bit
     for (size_t i = 0 ; i < rsize ; i++ ){
       
       const auto ireco = Idxs[0][i];
@@ -48,14 +48,17 @@ auto getMatchedBit( T &dfin ){
       int bit1 = ( recotrkID[ireco] == vecplane[0] ) ? 1 : 0;
       int bit2 = ( recotrkID[ireco] == vecplane[1] ) ? 1 : 0;
       int bit3 = ( recotrkID[ireco] == vecplane[2] ) ? 1 : 0;
-
-      matchedBit.push_back( bit1 + 2*(bit2) + 4*(bit3) );
+      int bits = bit1 + 2*(bit2) + 4*(bit3);
       
-    }
-    
-    return dfin.Define( "matchedBit" , matchedBit , { "TrackId" , "trkidtruth_pandoraTrack" } );
-  }
+      // no match at all
+      if ( bits == 0 ) continue;
+      out.push_back( std::make_pair( std::make_pair<ireco,itruth> , bits ) );
+    } //
+  } //
 
+  // TrackId[geant_list_size]
+  // trkidtruth_pandoraTrack[ntracks_pandoraTrack][3]
+  return dfin.Define( "matchedBit" , matchedBit , { "TrackId" , "trkidtruth_pandoraTrack" } );
 
 };
 
@@ -101,13 +104,13 @@ int main(int argc, char **argv) {
   df = getMatchedBit(df);
 
   // is this the best plane
-  df = df.Filter( "matchedBit >= 7" , "match all plane" );
+  df = df.Filter( "matchedBit.second >= 7" , "match all planes" ); // trkpidbestplane_pandoraTrack[ntracks_pandoraTrack]
 
   // is this a good track (>= goodTrackHits hits) ?
-  df = df.Filter( "ntrkhits_pandoraTrack > 5" );
+  df = df.Filter( "ntrkhits_pandoraTrack > 5" ); // ntrkhits_pandoraTrack[ntracks_pandoraTrack][3]
 
   // pdg of MC particle tracked the IDed reco track PDG?
-  df = df.Filter( "abs(pdg) == trkpidpdg_pandoraTrack" ); // length of 3!! 
+  df = df.Filter( "abs(pdg) == trkpidpdg_pandoraTrack[0]" , "mc is tracking the reco in all plane" ); // trkpidpdg_pandoraTrack[ntracks_pandoraTrack][3]
 
   // 
 }
