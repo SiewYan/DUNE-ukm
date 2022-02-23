@@ -21,8 +21,10 @@
 #include "TRandom3.h"
 #include "TLorentzVector.h"
 
+// file:///tmp/mozilla_siewyan0/AnalysisTree%20variables%20-%20uBooNE%20code%20-%20Fermilab%20Redmine.html
+
 template <typename T>
-auto getMatchedBit( T &dfin ){
+auto getMatchedTruthBit( T &dfin ){
 
   using namespace ROOT::VecOps;
 
@@ -92,6 +94,9 @@ int main(int argc, char **argv) {
   //
   ROOT::RDataFrame df( "analysistree/anatree", infiles);
 
+  // look at muon
+  df  = df.Filter( "abs(pdg) == 13" );
+
   // only want true particle which ends at TPC
   df = df.Define( "dx" , "EndPointx_tpcAV - EndPointx" )
     .Define( "dy" , "EndPointy_tpcAV - EndPointy" )
@@ -101,11 +106,27 @@ int main(int argc, char **argv) {
     ;
   
   // get the indices of reco track where G4 TrackID match the MC's
+  // HEREEEE
   df = getMatchedBit(df);
 
-  // is this the best plane
-  df = df.Filter( "matchedBit.second >= 7" , "match all planes" ); // trkpidbestplane_pandoraTrack[ntracks_pandoraTrack]
+  // flatten information according to plane
+  df = df.Define( "matchMCIdx" , "matchedBit.first.second" );
 
+  // is this the best plane
+  // trkpidbestplane_pandoraTrack[ntracks_pandoraTrack]
+  df = df.Filter( "matchedBit.second >= 7" , "match all planes" );
+
+  // loop over the number of wire planes (which is always 3: 0 is U plane, 1 is V plane, and 2 is W (or Z) plane
+  // ntrkhits_pandoraTrack[ntracks_pandoraTrack][3]
+  df = df
+    .Define( "ntrkhits_Uplane" , "ntrkhits_pandoraTrack[matchMCIdx][0]" )
+    .Define( "ntrkhits_Vplane" , "ntrkhits_pandoraTrack[matchMCIdx][1]" )
+    .Define( "ntrkhits_Wplane" , "ntrkhits_pandoraTrack[matchMCIdx][2]" )
+    .Filter( "ntrkhits_Uplnae > 5" )
+    .Filter( "ntrkhits_Vplnae > 5" )
+    .Filter( "ntrkhits_Wplnae > 5" )
+    ;
+  
   // is this a good track (>= goodTrackHits hits) ?
   df = df.Filter( "ntrkhits_pandoraTrack > 5" ); // ntrkhits_pandoraTrack[ntracks_pandoraTrack][3]
 
