@@ -26,8 +26,10 @@ std::vector<std::string> planeData = {
 int main(int argc, char **argv) {
 
   const auto poolSize = ROOT::GetThreadPoolSize();
+
   if (poolSize == 0){
     std::cout << "Error, number of poolSize detected to be zero" << std::endl;
+    std::cout << "IsImplicitMTEnabled() is : " << ROOT::IsImplicitMTEnabled() << std::endl;
     return -1;
   }
   
@@ -84,7 +86,7 @@ int main(int argc, char **argv) {
   //df = Matching(df);
 
   auto dfout = df3;
-  dfout.Snapshot( "tpc" , "test.root" , dfout.GetDefinedColumnNames() );
+  dfout.Snapshot( "tpc" , output , dfout.GetDefinedColumnNames() );
   
   ROOT::RDF::SaveGraph( dfout ,"graph_tpc.dot");
   
