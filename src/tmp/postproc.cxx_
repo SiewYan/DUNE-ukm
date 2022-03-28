@@ -23,18 +23,6 @@ std::vector<std::string> planeData = {
 
 int main(int argc, char **argv) {
 
-  const auto poolSize = ROOT::GetThreadPoolSize();
-
-  if (poolSize == 0){
-    std::cout << "Error, number of poolSize detected to be zero" << std::endl;
-    std::cout << "IsImplicitMTEnabled() is : " << ROOT::IsImplicitMTEnabled() << std::endl;
-    std::cout << "running without paralellism" << std::endl;
-  }
-  else{
-    std::cout << ">>> Number of core used : " << poolSize << std::endl;
-    ROOT::EnableImplicitMT(poolSize);
-  }
-
   if(argc != 4) {
     std::cout << "Use executable with following arguments: ./analysis name input output" << std::endl;
     return -1;
