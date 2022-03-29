@@ -5,6 +5,24 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
+// User Memeber functions
+Int_t postproc::Cut(Long64_t entry)
+{
+  // This function may be called from Loop.
+  // returns  1 if entry is accepted.
+  // returns -1 otherwise.
+
+  return 1;
+}
+
+void postproc::turnOnBranches(std::vector<std::string> branchIn)
+{
+  fChain->SetBranchStatus("*",0);  // disable all branches
+  for ( auto& branch : branchIn )
+    fChain->SetBranchStatus( branch.c_str() , 1 );  // activate branchname
+}
+
+
 void postproc::Loop()
 {
 //   In a ROOT session, you can do:
@@ -30,23 +48,45 @@ void postproc::Loop()
 // METHOD2: replace line
 //    fChain->GetEntry(jentry);       //read all branches
 //by  b_branchname->GetEntry(ientry); //read only this branch
-   if (fChain == 0) return;
 
-   Long64_t nentries = fChain->GetEntriesFast();
+  if (fChain == 0) return;
+  
+  //Long64_t nentries = fChain->GetEntriesFast();
+  Long64_t nentries = fChain->GetEntries();
+  std::cout<< "nentries : " << nentries <<std::endl;
 
-   Long64_t nbytes = 0, nb = 0;
-   for (Long64_t jentry=0; jentry<nentries;jentry++) {
-      Long64_t ientry = LoadTree(jentry);
-      if (ientry < 0) break;
-      nb = fChain->GetEntry(jentry);   nbytes += nb;
-      // if (Cut(ientry) < 0) continue;
-      std::cout<< "nb : " << nb <<std::endl;
-      //nclusters
-   }
+  Long64_t nbytes = 0, nb = 0;
+  for (Long64_t jentry=0; jentry<nentries;jentry++) {
+    //Long64_t ientry = LoadTree(jentry);
+    //if (ientry < 0) break;
+
+    nb = fChain->GetEntry(jentry);   nbytes += nb;
+
+    // if (Cut(ientry) < 0) continue;
+    std::cout<<"number of event processed : "<< jentry <<std::endl;
+    //std::cout<<"entry number in current tree :"<< ientry <<std::endl;
+  }
 }
 
-int main() {
-  postproc* t = new postproc();
+int main(int argc, char **argv) {
+
+  // start time
+  TStopwatch time;
+  time.Start();
+
+  //std::cout<<"argc : " << argc << std::endl;
+
+  TCLAP::CmdLine cmd( "postproc" , ' ' , "0.1" );  
+  TCLAP::ValueArg<std::string> inFile ( "f" , "filelist" , "Dataset to be ran"   , true , "dummy"         , "string" , cmd );
+  TCLAP::ValueArg<std::string> outFile( "o" , "output"  , "Name used for output" , true , "dummy"         , "string" , cmd );
+
+  cmd.parse( argc, argv );
+
+  std::cout<< "inFile  : "<<inFile.getValue()<<std::endl;
+  std::cout<< "outFile : "<<outFile.getValue()<<std::endl;
+
+  std::vector<std::string> files = makeList(inFile.getValue());
+  postproc* t = new postproc(files);
   t->Loop();
   return 0;
 }

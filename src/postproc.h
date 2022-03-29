@@ -29,6 +29,8 @@
 #include <algorithm> // for std::find
 //#include <iterator> // for std::begin, std::end
 
+#include "tclap/CmdLine.h"
+
 class postproc {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -1095,22 +1097,23 @@ public :
    TBranch        *b_vtxPFParticleID_pandora;   //!
 
    postproc(TTree *tree=0);
+   postproc(std::vector<std::string> filelist);
    virtual ~postproc();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
-   virtual void     Init(TTree *tree);
+   virtual void     Init(TChain *tree);
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-   // user function
+   // user member function
    virtual void     turnOnBranches(std::vector<std::string> branchIn);
 };
 
 #endif
 
 #ifdef postproc_cxx
-
+/**
 postproc::postproc(TTree *tree) : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
@@ -1122,9 +1125,19 @@ postproc::postproc(TTree *tree) : fChain(0)
       }
       TDirectory * dir = (TDirectory*)f->Get("MUSUN_dunefd_1454_gen_g4filt_detsim_freco_ana.root:/analysistree");
       dir->GetObject("anatree",tree);
-
    }
    Init(tree);
+}
+**/
+
+postproc::postproc(std::vector<std::string> filelist) : fChain(0)
+{
+  TChain *tChain = new TChain("analysistree/anatree");
+  for (auto & file : filelist){
+    std::cout<<"adding file : "<< file.c_str() <<std::endl;
+    tChain->Add(file.c_str());
+  }
+  Init(tChain);
 }
 
 postproc::~postproc()
@@ -1139,6 +1152,7 @@ Int_t postproc::GetEntry(Long64_t entry)
    if (!fChain) return 0;
    return fChain->GetEntry(entry);
 }
+
 Long64_t postproc::LoadTree(Long64_t entry)
 {
 // Set the environment to read one entry
@@ -1152,7 +1166,7 @@ Long64_t postproc::LoadTree(Long64_t entry)
    return centry;
 }
 
-void postproc::Init(TTree *tree)
+void postproc::Init(TChain *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -1165,6 +1179,7 @@ void postproc::Init(TTree *tree)
    // Set object pointer
    processname = 0;
    // Set branch addresses and branch pointers
+   std::cout<<"tree is zero ?"<< tree <<std::endl;
    if (!tree) return;
    fChain = tree;
    fCurrent = -1;
