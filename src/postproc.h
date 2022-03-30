@@ -11,6 +11,7 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TString.h>
 
 // Header file for the classes stored in the TTree if any.
 //#include "vector"
@@ -35,7 +36,8 @@ class postproc {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
-
+   TString         fout;
+   TTree           *tout;
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
    // Declaration of leaf types
@@ -1096,8 +1098,8 @@ public :
    TBranch        *b_vtxhasPFParticle_pandora;   //!
    TBranch        *b_vtxPFParticleID_pandora;   //!
 
-   postproc(TTree *tree=0);
-   postproc(std::vector<std::string> filelist);
+   //postproc(TTree *tree=0);
+   postproc( std::vector<std::string> filelist , std::string fileout );
    virtual ~postproc();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -1107,7 +1109,7 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    // user member function
-   virtual void     turnOnBranches(std::vector<std::string> branchIn);
+   virtual void     turnOnBranches(std::vector<std::string> branchIn , TTree *tree);
 };
 
 #endif
@@ -1130,13 +1132,14 @@ postproc::postproc(TTree *tree) : fChain(0)
 }
 **/
 
-postproc::postproc(std::vector<std::string> filelist) : fChain(0)
+postproc::postproc( std::vector<std::string> filelist , std::string fileout ) : fChain(0)
 {
   TChain *tChain = new TChain("analysistree/anatree");
   for (auto & file : filelist){
     std::cout<<"adding file : "<< file.c_str() <<std::endl;
     tChain->Add(file.c_str());
   }
+  fout = fileout;
   Init(tChain);
 }
 
@@ -1178,8 +1181,6 @@ void postproc::Init(TChain *tree)
 
    // Set object pointer
    processname = 0;
-   // Set branch addresses and branch pointers
-   std::cout<<"tree is zero ?"<< tree <<std::endl;
    if (!tree) return;
    fChain = tree;
    fCurrent = -1;

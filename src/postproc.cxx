@@ -15,13 +15,12 @@ Int_t postproc::Cut(Long64_t entry)
   return 1;
 }
 
-void postproc::turnOnBranches(std::vector<std::string> branchIn)
+void postproc::turnOnBranches(std::vector<std::string> branchIn, TTree *tree_)
 {
-  fChain->SetBranchStatus("*",0);  // disable all branches
+  tree_->SetBranchStatus("*",0);  // disable all branches
   for ( auto& branch : branchIn )
-    fChain->SetBranchStatus( branch.c_str() , 1 );  // activate branchname
+    tree_->SetBranchStatus( branch.c_str() , 1 );  // activate branchname
 }
-
 
 void postproc::Loop()
 {
@@ -55,20 +54,51 @@ void postproc::Loop()
   Long64_t nentries = fChain->GetEntries();
   std::cout<< "nentries : " << nentries <<std::endl;
 
-  // turn on these branches
-  turnOnBranches(theBranch);
+  turnOnBranches(inputBranch,fChain);
+  
+  TFile *f = TFile::Open( fout , "recreate" );
+  TTree *newtree = fChain->CloneTree(0);
+  //newtree->CopyEntries(fChain);
 
+  // new branch
+  const Int_t MAXSIZE = 19000; //geant_list_size;
+  Float_t ds_tpcAV[MAXSIZE] = {-9999.};
+  
+  // add new branch
+  //newtree->Branch( "ntpcAV" , &ntpcAV , "ntpcAV/I" );
+  newtree->Branch( "ds_tpcAV" , &ds_tpcAV , Form("ds_tpcAV[%i]/F",MAXSIZE)); //"ds_tpcAV[MAXSIZE]/F" );
+  //newtree->Branch( "ds_tpcAV" , &ds_tpcAV );
+
+  // EVENT LOOP
   Long64_t nbytes = 0, nb = 0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
-    //Long64_t ientry = LoadTree(jentry);
-    //if (ientry < 0) break;
-
+    Long64_t ientry = LoadTree(jentry);
+    if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
 
+    //if(jentry % 100 == 0) { std::cout << "Number of event processed : " << jentry <<std::endl; }
+    std::cout << "Number of event processed : " << jentry <<std::endl;
     // if (Cut(ientry) < 0) continue;
-    std::cout<<"number of event processed : "<< jentry <<std::endl;
-    //std::cout<<"entry number in current tree :"<< ientry <<std::endl;
-  }
+    
+    // true particle which ends at TPC
+    //ntpcAV = static_cast<int>(pdg.size());
+    Int_t ntpc = sizeof(pdg);
+    for (Int_t imc = 0 ; imc < ntpc ; imc ++ ){
+      Float_t dx = EndPointx_tpcAV[imc] - EndPointx[imc];
+      Float_t dy = EndPointy_tpcAV[imc] - EndPointy[imc];
+      Float_t dz = EndPointz_tpcAV[imc] - EndPointz[imc];
+      ds_tpcAV[imc] = dx+dy+dz;
+    }
+    
+    newtree->Fill();
+  } // end of loop
+
+  //newtree->Fill();
+  //newtree->CopyEntries(fChain);
+  turnOnBranches(outputBranch,newtree);
+  tout = newtree->CloneTree(0);
+  tout->Write();
+  f->Close();
 }
 
 int main(int argc, char **argv) {
@@ -89,7 +119,7 @@ int main(int argc, char **argv) {
   std::cout<< "outFile : "<<outFile.getValue()<<std::endl;
 
   std::vector<std::string> files = makeList(inFile.getValue());
-  postproc* t = new postproc(files);
+  postproc* t = new postproc( files , outFile.getValue() );
   t->Loop();
   return 0;
 }

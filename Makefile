@@ -9,7 +9,7 @@ INCLUDES = -I $(SRC_DIR) -I $(PLUGINS_DIR)
 
 all: postproc
 
-postproc: src/postproc.C
+postproc: src/postproc.cxx
 		@[ -d $(BASE_DIR)/bin ] || mkdir -p $(BASE_DIR)/bin
 		$(COMPILER) $(FLAGS) $(INCLUDES) $< -o bin/$@
 

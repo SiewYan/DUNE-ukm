@@ -1,7 +1,8 @@
 #define functions_h
 
-// branches
-std::vector<std::string> theBranch = {
+// branches to be processed
+std::vector<std::string> inputBranch = {
+  "geant_list_size",
   "pdg",
   "EndPointx",
   "EndPointy",
@@ -17,6 +18,21 @@ std::vector<std::string> theBranch = {
   "trkresrg_pandoraTrack",
   "trkdedx_pandoraTrack"
 };
+
+// branches to be saved
+std::vector<std::string> outputBranch = {
+  "geant_list_size",
+  "pdg",
+  "TrackId",
+  "trkpidbestplane_pandoraTrack",
+  "ntrkhits_pandoraTrack",
+  "trkidtruth_pandoraTrack",
+  "trkpidpdg_pandoraTrack",
+  "trkresrg_pandoraTrack",
+  "trkdedx_pandoraTrack" ,
+  "ds_tpcAV"
+};
+
 
 std::vector<std::string> makeList(std::string textfile)
 {
