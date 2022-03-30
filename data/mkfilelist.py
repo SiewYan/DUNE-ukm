@@ -9,7 +9,7 @@ fileDict = {
 }
 
 # number of file per job
-fileperjob = 3
+fileperjob = 5
 
 for dataset, dirs in fileDict.items():
 
