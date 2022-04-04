@@ -24,6 +24,8 @@ def makescript( sample_ , cmd_ , jobout__ ):
     outscript = jobout__+"/"+sample_+".sh"
     with open( outscript , 'a') as script :
         script.write( '#!/bin/bash\n' )
+        script.write( 'source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh\n' )
+        script.write( 'setup dunetpc\n' )
         script.write( 'export HOME=%s\n' %getTOPDIR(jobout__) )
         script.write( 'echo $HOME\n' )
         #script.write( 'ulimit -c 0\n' )
@@ -38,13 +40,9 @@ def makescript( sample_ , cmd_ , jobout__ ):
     with open( outscriptSub , 'a' ) as script :
         script.write( 'universe = vanilla\n' )
         script.write( 'Executable = %s\n' %outscript )
-        #script.write( 'transfer_input_files = /homeui/%s/x509up_u%s\n' %( os.environ["USER"] ,  os.getuid() ) )
-        #script.write( 'use_x509userproxy = True\n' )
-        #script.write( 'x509userproxy = /homeui/%s/x509up_u%s\n' %( os.environ["USER"] , os.getuid() ) )
         script.write( 'output    = %s\n' %outscript.replace('.sh' , '.out') )
         script.write( 'error     = %s\n' %outscript.replace('.sh' , '.err') )
         script.write( 'log       = %s\n' %outscript.replace('.sh','.log') )
-        #script.write( 'transfer_output_remaps  = \"%s.root=%s.root\"\n' %( sample_name__ , outscript.split('/')[-1].replace('.sh','') ) )
         script.write( 'should_transfer_files = YES\n' )
         script.write( 'when_to_transfer_output = ON_EXIT\n' )
         script.write( 'queue\n')
@@ -78,8 +76,7 @@ if __name__ == "__main__" :
     
     filelists = glob.glob("%s/*.txt" %SOURCE_DIR) if dataset == "all" else glob.glob("%s/%s*.txt" %(SOURCE_DIR,dataset) )
 
-    if not test: os.system("cd %s; make" %TOP_DIR )
+    os.system("cd %s; make" %TOP_DIR )
     for iproc in filelists:
-        #print(iproc)
         execute( iproc , job_dir , prod_out )
 
