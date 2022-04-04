@@ -16,4 +16,4 @@ makefilelist:
 		cd data; python mkfilelist.py
 
 clean:
-		rm -rf core src/*.o bin/
+		rm -rf core src/*.o bin/ jobs/ data/*.txt
