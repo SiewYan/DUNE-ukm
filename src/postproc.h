@@ -32,12 +32,18 @@
 
 #include "tclap/CmdLine.h"
 
+// SIZE
+const Int_t MAXSIZE = 2000;
+
+// list of interesting particle
+// MC muons, pions, kaons and protons
+//std::vector<Int_t> parts = { 13, 211, 321, 2212 };
+
 class postproc {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
    TString         fout;
-   TTree           *tout;
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
    // Declaration of leaf types
@@ -1101,7 +1107,7 @@ public :
    //postproc(TTree *tree=0);
    postproc( std::vector<std::string> filelist , std::string fileout );
    virtual ~postproc();
-   virtual Int_t    Cut(Long64_t entry);
+   //virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TChain *tree);
