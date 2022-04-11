@@ -25,7 +25,7 @@ def makescript( sample_ , cmd_ , jobout__ ):
     with open( outscript , 'a') as script :
         script.write( '#!/bin/bash\n' )
         script.write( 'source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh\n' )
-        script.write( 'setup dunetpc\n' )
+        script.write( 'setup dunetpc v09_22_00 -q e19:prof\n' )
         script.write( 'export HOME=%s\n' %getTOPDIR(jobout__) )
         script.write( 'echo $HOME\n' )
         #script.write( 'ulimit -c 0\n' )
