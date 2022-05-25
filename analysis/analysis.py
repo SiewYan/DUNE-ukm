@@ -71,6 +71,9 @@ for i in colorcode:
                                  "dE/dx vs residual track length for wrongly matched PDG (PDG " + str(i) + ")",
                                  nx, xmin, xmax, ny, ymin, ymax)
 
+bestPlane = ROOT.TH1F( "bestPlane" , "best plane used for track" , 3 , -0.5 , 2.5  )
+#pdgId = ROOT.TH1F( "pdgId" , "PdgId used in the study" , 20 , -2200 , 2200  )
+
 print('Histograms initialized. Now looping through the chain.')
 
 for k, ev in enumerate(chain):
@@ -97,7 +100,7 @@ for k, ev in enumerate(chain):
   list_pdg = list(ev.genlist_pdg)
   list_endPointS = list(ev.genlist_endPointS)
   list_TrackId = list(ev.genlist_trackId)
-  #list_trkpidbestplane = list(ev.recoTrack_bestplane)
+  list_trkpidbestplane = list(ev.recoTrack_bestplane)
   list_trkidtruth = list(ev.recoTrack_bestplane_trkpidpdg)
   list_ntrkhits = list(ev.recoTrack_bestplane_hits)
   list_trkpidpdg = list(ev.recoTrack_bestplane_trkpidpdg)
@@ -105,12 +108,8 @@ for k, ev in enumerate(chain):
   list_trkdedx = list(ev.recoTrack_bestplane_dedx)
   for iMC, mcpdg in enumerate(list_pdg):
     # only look for MC muons, pions, kaons and protons
-    if abs(mcpdg) not in colorcode:
-      continue
+    if abs(mcpdg) not in colorcode: continue
     # only want true particle which ends at TPC
-    #dx = list_EndPointx_tpcAV[iMC] - list_EndPointx[iMC]
-    #dy = list_EndPointy_tpcAV[iMC] - list_EndPointy[iMC]
-    #dz = list_EndPointz_tpcAV[iMC] - list_EndPointz[iMC]
     if ( list_endPointS[iMC] > 1e-10): continue
     # get the Geant4 Track ID for this MC
     trkid = list_TrackId[iMC]
@@ -122,6 +121,7 @@ for k, ev in enumerate(chain):
         # All the track info is selected with bestplane: recoTrack_bestplane
         #if i % 3 != list_trkpidbestplane[i//3]:
         #  continue
+        bestPlane.Fill(list_trkpidbestplane[i])
         # is this a good track (>= goodTrackHits hits) ?
         if list_ntrkhits[i] < args.goodTrackHits:
           continue
@@ -134,7 +134,7 @@ for k, ev in enumerate(chain):
           if x > 0.0 or y > 0.0:
             if isMatch:
               hDeDxPlot_Right[abs(mcpdg)].Fill(x, y)
-          else:
+            else:
               hDeDxPlot_Wrong[abs(mcpdg)].Fill(x, y)
 
 print('Done looping TChain. Now writing output file.')
@@ -143,6 +143,7 @@ outfile = ROOT.TFile(args.outFileName, "RECREATE")
 for i in colorcode:
   hDeDxPlot_Right[i].Write()
   hDeDxPlot_Wrong[i].Write()
+bestPlane.Write()
 outfile.Close()
 
 print('All done!')
