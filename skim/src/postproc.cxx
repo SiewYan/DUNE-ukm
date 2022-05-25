@@ -61,8 +61,10 @@ void postproc::Loop()
 
   // new branch
   std::vector<Float_t> genlist_endPointS;
-  std::vector<Int_t> recoTrack_bestplane;
-  
+  std::vector<Int_t> genlist_pdg;
+  std::vector<Int_t> genlist_status;
+  std::vector<Int_t> genlist_trackId;
+  std::vector<Int_t> recoTrack_bestplane;  
   std::vector<Int_t> recoTrack_bestplane_hits;
   std::vector<Int_t> recoTrack_bestplane_trkidtruth;
   std::vector<Int_t> recoTrack_bestplane_trkpidpdg;
@@ -71,6 +73,9 @@ void postproc::Loop()
   
   // add new branch
   newtree->Branch( "genlist_endPointS" , &genlist_endPointS );
+  newtree->Branch( "genlist_pdg" , &genlist_pdg );
+  newtree->Branch( "genlist_status" , &genlist_status );
+  newtree->Branch( "genlist_trackId" , &genlist_trackId );
   newtree->Branch( "recoTrack_bestplane" , &recoTrack_bestplane );
   newtree->Branch( "recoTrack_bestplane_hits" , &recoTrack_bestplane_hits );
   newtree->Branch( "recoTrack_bestplane_trkidtruth" , &recoTrack_bestplane_trkidtruth );
@@ -90,6 +95,9 @@ void postproc::Loop()
     // if (Cut(ientry) < 0) continue;
 
     genlist_endPointS.clear(); 
+    genlist_pdg.clear();
+    genlist_status.clear();
+    genlist_trackId.clear();
     recoTrack_bestplane.clear(); 
     recoTrack_bestplane_hits.clear(); 
     recoTrack_bestplane_trkidtruth.clear();
@@ -98,6 +106,11 @@ void postproc::Loop()
     recoTrack_bestplane_dedx.clear();
     
     for (Int_t imc = 0 ; imc < geant_list_size ; imc++){
+      // copy pdg
+      genlist_pdg.push_back(pdg[imc]);
+      genlist_status.push_back(status[imc]);
+      genlist_trackId.push_back(TrackId[imc]);
+      // the endpoint
       genlist_endPointS.push_back(
 				  (EndPointx_tpcAV[imc] - EndPointx[imc]) + 
 				  (EndPointy_tpcAV[imc] - EndPointy[imc]) +

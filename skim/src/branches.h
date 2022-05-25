@@ -4,6 +4,7 @@
 std::vector<std::string> inputBranch = {
   "geant_list_size",
   "pdg",
+  "status",
   "EndPointx",
   "EndPointy",
   "EndPointz",
@@ -22,6 +23,9 @@ std::vector<std::string> inputBranch = {
 // branches to be saved
 std::vector<std::string> outputBranch = {
   "geant_list_size",
+  "genlist_pdg",
+  "genlist_status",
+  "genlist_trackId",
   "ntracks_pandoraTrack",
   "genlist_endPointS",
   "recoTrack_bestplane",
