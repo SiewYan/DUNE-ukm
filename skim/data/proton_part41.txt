@@ -1,0 +1,5 @@
+/data/iyusuff/cosmicgen_proton_20210502/data/5100/5180/MUSUN_dunefd_5180_gen_g4filt_detsim_freco_ana.root
+/data/iyusuff/cosmicgen_proton_20210502/data/5100/5181/MUSUN_dunefd_5181_gen_g4filt_detsim_freco_ana.root
+/data/iyusuff/cosmicgen_proton_20210502/data/5100/5183/MUSUN_dunefd_5183_gen_g4filt_detsim_freco_ana.root
+/data/iyusuff/cosmicgen_proton_20210502/data/5100/5184/MUSUN_dunefd_5184_gen_g4filt_detsim_freco_ana.root
+/data/iyusuff/cosmicgen_proton_20210502/data/5100/5185/MUSUN_dunefd_5185_gen_g4filt_detsim_freco_ana.root

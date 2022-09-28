@@ -1,6 +1,6 @@
 #define postproc_cxx
 #include "postproc.h"
-#include "branches.h"
+#include "helper.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
@@ -15,12 +15,12 @@
 //  return 1;
 //}
 
-void postproc::turnOnBranches(std::vector<std::string> branchIn, TTree *tree_)
-{
-  tree_->SetBranchStatus("*",0);  // disable all branches
-  for ( auto& branch : branchIn )
-    tree_->SetBranchStatus( branch.c_str() , 1 );  // activate branchname
-}
+//void postproc::turnOnBranches(std::vector<std::string> branchIn, TTree *tree_)
+//{
+//  tree_->SetBranchStatus("*",0);  // disable all branches
+//  for ( auto& branch : branchIn )
+//    tree_->SetBranchStatus( branch.c_str() , 1 );  // activate branchname
+//}
 
 void postproc::Loop()
 {
@@ -52,9 +52,9 @@ void postproc::Loop()
   
   //Long64_t nentries = fChain->GetEntriesFast();
   Long64_t nentries = fChain->GetEntries();
-  std::cout<< "nentries : " << nentries <<std::endl;
+  std::cout<< "nevent : " << nentries <<std::endl;
 
-  turnOnBranches(inputBranch,fChain);
+  turnOnBranches(inbranches,fChain);
   
   TFile *f = TFile::Open( fout , "RECREATE" );
   TTree *newtree = fChain->CloneTree(0);
@@ -146,7 +146,7 @@ void postproc::Loop()
 
   //newtree->Fill();
   //newtree->CopyEntries(fChain);
-  turnOnBranches(outputBranch,newtree);
+  turnOnBranches(outbranches,newtree);
   TTree* tout = newtree->CloneTree(0);
   tout->CopyEntries(newtree);
   tout->Write();
@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
 
   std::cout<< "inFile  : "<<inFile.getValue()<<std::endl;
   std::cout<< "outFile : "<<outFile.getValue()<<std::endl;
-
+  
   std::vector<std::string> files = makeList(inFile.getValue());
   postproc* t = new postproc( files , outFile.getValue() );
   t->Loop();

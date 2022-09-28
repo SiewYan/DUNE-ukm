@@ -1,0 +1,13 @@
+# per event 
+geant_list_size
+genlist_pdg
+genlist_status
+genlist_trackId
+ntracks_pandoraTrack
+genlist_endPointS
+recoTrack_bestplane
+recoTrack_bestplane_hits
+recoTrack_bestplane_trkidtruth
+recoTrack_bestplane_trkpidpdg
+recoTrack_bestplane_resrg
+recoTrack_bestplane_dedx
