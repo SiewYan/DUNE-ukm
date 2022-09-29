@@ -153,6 +153,37 @@ void postproc::Loop()
   f->Close();
 }
 
+void postproc::Skim()
+{
+  if (fChain == 0) return;
+
+  turnOnBranches(inbranches,fChain);
+  //Long64_t nentries = fChain->GetEntriesFast();
+
+  TFile *f = TFile::Open( fout , "RECREATE" );
+  TTree *newtree = fChain->CloneTree(0);
+
+  Long64_t nentries = fChain->GetEntries();
+  std::cout<< "nevent : " << nentries <<std::endl;
+
+  // EVENT LOOP 
+  Long64_t nbytes = 0, nb = 0;
+  for (Long64_t jentry=0; jentry<nentries;jentry++) {
+    Long64_t ientry = LoadTree(jentry);
+    if (ientry < 0) break;
+    nb = fChain->GetEntry(jentry);   nbytes += nb;
+    
+    if(jentry % 20 == 0) { std::cout << "Number of event processed : " << jentry <<std::endl; }
+    
+    newtree->Fill();
+    
+  }
+  TTree* tout = newtree->CloneTree(0);
+  tout->CopyEntries(newtree);
+  tout->Write();
+  f->Close();
+}
+
 int main(int argc, char **argv) {
 
   // start time
@@ -162,16 +193,25 @@ int main(int argc, char **argv) {
   //std::cout<<"argc : " << argc << std::endl;
 
   TCLAP::CmdLine cmd( "postproc" , ' ' , "0.1" );  
-  TCLAP::ValueArg<std::string> inFile ( "f" , "filelist" , "Dataset to be ran"   , true , "dummy"         , "string" , cmd );
-  TCLAP::ValueArg<std::string> outFile( "o" , "output"  , "Name used for output" , true , "dummy"         , "string" , cmd );
+  TCLAP::SwitchArg             onlyskim ( "s" , "onlyskim"  , "perform dropping branches only" , cmd , false);
+  TCLAP::ValueArg<std::string> inFile   ( "f" , "filelist" , "Dataset to be ran"   , true  , "dummy"         , "string" , cmd );
+  TCLAP::ValueArg<std::string> outFile  ( "o" , "output"  , "Name used for output" , true  , "dummy"         , "string" , cmd );
 
   cmd.parse( argc, argv );
 
-  std::cout<< "inFile  : "<<inFile.getValue()<<std::endl;
-  std::cout<< "outFile : "<<outFile.getValue()<<std::endl;
+  std::cout<< "onlyskim  : "<<onlyskim.getValue()<<std::endl;
+  std::cout<< "inFile    : "<<inFile.getValue()<<std::endl;
+  std::cout<< "outFile   : "<<outFile.getValue()<<std::endl;
   
   std::vector<std::string> files = makeList(inFile.getValue());
   postproc* t = new postproc( files , outFile.getValue() );
-  t->Loop();
+  
+  if (!onlyskim.getValue()){
+    t->Loop();
+  }
+  else{
+    std::cout<<" --> Skim ONLY"<<std::endl;
+    t->Skim();
+  }
   return 0;
 }

@@ -1112,6 +1112,7 @@ public :
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TChain *tree);
    virtual void     Loop();
+   virtual void     Skim();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    // user member function
