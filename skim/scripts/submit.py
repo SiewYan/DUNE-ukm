@@ -51,9 +51,12 @@ def makescript( sample_ , cmd_ , jobout__ ):
 
 pass
 
-def execute( iproc_ , jobout_ , output_ ):
+def execute( iproc_ , jobout_ , output_ , onlyskim_ ):
     sample = iproc_.split('/')[-1].split('.txt')[0]
-    cmd="%s/bin/postproc -o %s/%s.root -f %s" %( getTOPDIR(jobout_) , output_ , sample , iproc_  )
+    if not onlyskim_:
+        cmd="%s/bin/postproc -o %s/%s.root -f %s" %( getTOPDIR(jobout_) , output_ , sample , iproc_  )
+    else:
+        cmd="%s/bin/postproc -s -o %s/%s.root -f %s" %( getTOPDIR(jobout_) , output_ , sample , iproc_  )
     print(cmd)
     makescript( sample , cmd , jobout_ )
     
@@ -61,12 +64,15 @@ pass
 
 if __name__ == "__main__" :
 
+    ##################################################
     TOP_DIR= getTOPDIR(os.getcwd())
     SOURCE_DIR="/home/hoh/dune_ukm/skim/data"
     PROD_DIR="/data/hoh"
-    PROD_FOLD="prod_v1"
+    PROD_FOLD="prod_v2"
     prod_out=PROD_DIR+"/"+PROD_FOLD
     job_dir=TOP_DIR+"/"+"jobs"
+    onlyskim=True
+    ##################################################
     
     if not os.path.exists(prod_out): os.system( "mkdir -p %s" %(prod_out) )
     if not os.path.exists(job_dir): 
@@ -78,5 +84,5 @@ if __name__ == "__main__" :
 
     os.system("cd %s; make" %TOP_DIR )
     for iproc in filelists:
-        execute( iproc , job_dir , prod_out )
+        execute( iproc , job_dir , prod_out , onlyskim )
 
