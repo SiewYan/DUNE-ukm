@@ -54,34 +54,62 @@ void postproc::Loop()
   Long64_t nentries = fChain->GetEntries();
   std::cout<< "nevent : " << nentries <<std::endl;
 
+  std::vector<int> pdgid{ 13, 211, 321, 2212};
+  
+  std::vector<std::string> inbranches = makeList("data/inbranch.dat");
+  std::vector<std::string> outbranches = makeList("data/outbranch.dat");
   turnOnBranches(inbranches,fChain);
   
   TFile *f = TFile::Open( fout , "RECREATE" );
-  TTree *newtree = fChain->CloneTree(0);
+  TTree *newtree = new TTree("newtree","postprocessing tree");
 
   // new branch
-  std::vector<Float_t> genlist_endPointS;
-  std::vector<Int_t> genlist_pdg;
-  std::vector<Int_t> genlist_status;
-  std::vector<Int_t> genlist_trackId;
-  std::vector<Int_t> recoTrack_bestplane;  
-  std::vector<Int_t> recoTrack_bestplane_hits;
-  std::vector<Int_t> recoTrack_bestplane_trkidtruth;
-  std::vector<Int_t> recoTrack_bestplane_trkpidpdg;
-  std::vector<Float_t> recoTrack_bestplane_resrg;
-  std::vector<Float_t> recoTrack_bestplane_dedx;
+  int ngenpart;
+  std::vector<Float_t> genpart_ds;
+  std::vector<Int_t> genpart_pdg;
+  std::vector<Int_t> genpart_status;
+  std::vector<Int_t> genpart_trackId;
+  // 0 : U plane ; 1 : V plane ; 2 : W plane
+  //
+  std::vector<Float_t> track_Uplane_cpdg_resrg;
+  std::vector<Float_t> track_Uplane_cpdg_dedx;
+
+  std::vector<Float_t> track_Uplane_wpdg_resrg;
+  std::vector<Float_t> track_Uplane_wpdg_dedx;
+
+  std::vector<Float_t> track_Vplane_cpdg_resrg;
+  std::vector<Float_t> track_Vplane_cpdg_dedx;
+
+  std::vector<Float_t> track_Vplane_wpdg_resrg;
+  std::vector<Float_t> track_Vplane_wpdg_dedx;
+
+  std::vector<Float_t> track_Wplane_cpdg_resrg;
+  std::vector<Float_t> track_Wplane_cpdg_dedx;
+
+  std::vector<Float_t> track_Wplane_wpdg_resrg;
+  std::vector<Float_t> track_Wplane_wpdg_dedx;
   
   // add new branch
-  newtree->Branch( "genlist_endPointS" , &genlist_endPointS );
-  newtree->Branch( "genlist_pdg" , &genlist_pdg );
-  newtree->Branch( "genlist_status" , &genlist_status );
-  newtree->Branch( "genlist_trackId" , &genlist_trackId );
-  newtree->Branch( "recoTrack_bestplane" , &recoTrack_bestplane );
-  newtree->Branch( "recoTrack_bestplane_hits" , &recoTrack_bestplane_hits );
-  newtree->Branch( "recoTrack_bestplane_trkidtruth" , &recoTrack_bestplane_trkidtruth );
-  newtree->Branch( "recoTrack_bestplane_trkpidpdg" , &recoTrack_bestplane_trkpidpdg );
-  newtree->Branch( "recoTrack_bestplane_resrg" , &recoTrack_bestplane_resrg );
-  newtree->Branch( "recoTrack_bestplane_dedx" , &recoTrack_bestplane_dedx );
+  newtree->Branch( "ngenpart" , &ngenpart );
+  newtree->Branch( "genpart_ds" , &genpart_pdg );
+  newtree->Branch( "genpart_pdg" , &genpart_pdg );
+  newtree->Branch( "genpart_status" , &genpart_status );
+  newtree->Branch( "genpart_trackId" , &genpart_trackId );
+
+  newtree->Branch( "track_Uplane_cpdg_resrg" , &track_Uplane_cpdg_resrg );
+  newtree->Branch( "track_Uplane_cpdg_dedx" , &track_Uplane_cpdg_dedx );
+  newtree->Branch( "track_Uplane_wpdg_resrg" , &track_Uplane_wpdg_resrg );
+  newtree->Branch( "track_Uplane_wpdg_dedx" , &track_Uplane_wpdg_dedx );
+
+  newtree->Branch( "track_Vplane_cpdg_resrg" , &track_Vplane_cpdg_resrg );
+  newtree->Branch( "track_Vplane_cpdg_dedx" , &track_Vplane_cpdg_dedx );
+  newtree->Branch( "track_Vplane_wpdg_resrg" , &track_Vplane_wpdg_resrg );
+  newtree->Branch( "track_Vplane_wpdg_dedx" , &track_Vplane_wpdg_dedx );
+  
+  newtree->Branch( "track_Wplane_cpdg_resrg" , &track_Wplane_cpdg_resrg );
+  newtree->Branch( "track_Wplane_cpdg_dedx" , &track_Wplane_cpdg_dedx );
+  newtree->Branch( "track_Wplane_wpdg_resrg" , &track_Wplane_wpdg_resrg );
+  newtree->Branch( "track_Wplane_wpdg_dedx" , &track_Wplane_wpdg_dedx );
 
   // EVENT LOOP
   Long64_t nbytes = 0, nb = 0;
@@ -94,68 +122,235 @@ void postproc::Loop()
     //std::cout << "Number of event processed : " << jentry <<std::endl;
     // if (Cut(ientry) < 0) continue;
 
-    genlist_endPointS.clear(); 
-    genlist_pdg.clear();
-    genlist_status.clear();
-    genlist_trackId.clear();
-    recoTrack_bestplane.clear(); 
-    recoTrack_bestplane_hits.clear(); 
-    recoTrack_bestplane_trkidtruth.clear();
-    recoTrack_bestplane_trkpidpdg.clear();
-    recoTrack_bestplane_resrg.clear(); 
-    recoTrack_bestplane_dedx.clear();
+    ngenpart=0;
+    genpart_ds.clear();
+    genpart_pdg.clear();
+    genpart_status.clear();
+    genpart_trackId.clear();
+
+    // Proton 2212
+    track_Uplane_proton_cpdg_resrg.clear();
+    track_Uplane_proton_cpdg_dedx.clear();
+
+    track_Uplane_proton_wpdg_resrg.clear();
+    track_Uplane_proton_wpdg_dedx.clear();
+
+    track_Vplane_proton_cpdg_resrg.clear();
+    track_Vplane_proton_cpdg_dedx.clear();
+
+    track_Vplane_proton_wpdg_resrg.clear();
+    track_Vplane_proton_wpdg_dedx.clear();
+
+    track_Wplane_proton_cpdg_resrg.clear();
+    track_Wplane_proton_cpdg_dedx.clear();
+
+    track_Wplane_proton_wpdg_resrg.clear();
+    track_Wplane_proton_wpdg_dedx.clear();
+
+    // Muon 13
+    track_Uplane_muon_cpdg_resrg.clear();
+    track_Uplane_muon_cpdg_dedx.clear();
+
+    track_Uplane_muon_wpdg_resrg.clear();
+    track_Uplane_muon_wpdg_dedx.clear();
+
+    track_Vplane_muon_cpdg_resrg.clear();
+    track_Vplane_muon_cpdg_dedx.clear();
+
+    track_Vplane_muon_wpdg_resrg.clear();
+    track_Vplane_muon_wpdg_dedx.clear();
+
+    track_Wplane_muon_cpdg_resrg.clear();
+    track_Wplane_muon_cpdg_dedx.clear();
+
+    track_Wplane_muon_wpdg_resrg.clear();
+    track_Wplane_muon_wpdg_dedx.clear();
+
+    // Kaon 321
+    track_Uplane_kaon_cpdg_resrg.clear();
+    track_Uplane_kaon_cpdg_dedx.clear();
+
+    track_Uplane_kaon_wpdg_resrg.clear();
+    track_Uplane_kaon_wpdg_dedx.clear();
+
+    track_Vplane_kaon_cpdg_resrg.clear();
+    track_Vplane_kaon_cpdg_dedx.clear();
+
+    track_Vplane_kaon_wpdg_resrg.clear();
+    track_Vplane_kaon_wpdg_dedx.clear();
+
+    track_Wplane_kaon_cpdg_resrg.clear();
+    track_Wplane_kaon_cpdg_dedx.clear();
+
+    track_Wplane_kaon_wpdg_resrg.clear();
+    track_Wplane_kaon_wpdg_dedx.clear();
+
+    // Pion 211
+    track_Uplane_pion_cpdg_resrg.clear();
+    track_Uplane_pion_cpdg_dedx.clear();
+
+    track_Uplane_pion_wpdg_resrg.clear();
+    track_Uplane_pion_wpdg_dedx.clear();
+
+    track_Vplane_pion_cpdg_resrg.clear();
+    track_Vplane_pion_cpdg_dedx.clear();
+
+    track_Vplane_pion_wpdg_resrg.clear();
+    track_Vplane_pion_wpdg_dedx.clear();
+
+    track_Wplane_pion_cpdg_resrg.clear();
+    track_Wplane_pion_cpdg_dedx.clear();
+
+    track_Wplane_pion_wpdg_resrg.clear();
+    track_Wplane_pion_wpdg_dedx.clear();
     
+    // COLLECTION 1 : MC INFORMATION
     for (Int_t imc = 0 ; imc < geant_list_size ; imc++){
-      // copy pdg
-      genlist_pdg.push_back(pdg[imc]);
-      genlist_status.push_back(status[imc]);
-      genlist_trackId.push_back(TrackId[imc]);
-      // the endpoint
-      genlist_endPointS.push_back(
-				  (EndPointx_tpcAV[imc] - EndPointx[imc]) + 
-				  (EndPointy_tpcAV[imc] - EndPointy[imc]) +
-				  (EndPointz_tpcAV[imc] - EndPointz[imc])
-				  );
-    }
-    
-    // trkpidbestplane_pandoraTrack[ntracks_pandoraTrack]/S
-    // ntrkhits_pandoraTrack[ntracks_pandoraTrack][3]/S
-    // trkidtruth_pandoraTrack[ntracks_pandoraTrack][3]/I
-    // trkpidpdg_pandoraTrack[ntracks_pandoraTrack][3]/I
-    // trkresrg_pandoraTrack[ntracks_pandoraTrack][3][2000]/F
-    // trkdedx_pandoraTrack[ntracks_pandoraTrack][3][2000]/F
-    
-    for (Int_t itrk = 0 ; itrk < ntracks_pandoraTrack; itrk++){
-      
-      Int_t ibestplane = trkpidbestplane_pandoraTrack[itrk];
-      recoTrack_bestplane.push_back(ibestplane);
-      recoTrack_bestplane_hits.push_back(ntrkhits_pandoraTrack[itrk][ibestplane]);
-      recoTrack_bestplane_trkidtruth.push_back(trkidtruth_pandoraTrack[itrk][ibestplane]);
-      recoTrack_bestplane_trkpidpdg.push_back(trkpidpdg_pandoraTrack[itrk][ibestplane]);
 
-      for (Int_t j = 0 ; j < MAXSIZE ; j++){
-
-	recoTrack_bestplane_resrg.push_back(trkresrg_pandoraTrack[itrk][ibestplane][j]);
-	recoTrack_bestplane_dedx.push_back(trkdedx_pandoraTrack[itrk][ibestplane][j]);
-      }
+      // looking only on muon, kaon, pion, proton
+      if (!contains( pdgid , abs(pdg[imc]) )) continue;
       
-    } // ntracks_pandoraTrack
+      if ( inTPCActive[imc] != 1 ) continue;
+      
+      Float_t ds = abs(EndPointx_tpcAV[imc] - EndPointx[imc]) + abs(EndPointy_tpcAV[imc] - EndPointy[imc]) + abs(EndPointz_tpcAV[imc] - EndPointz[imc]);
+      
+      if (ds > 1e-10 ) continue;
+      
+      // Save the passing genlist
+      ngenpart+=1;
+      genpart_ds.push_back(ds);
+      genpart_pdg.push_back(pdg[imc]);
+      genpart_status.push_back(status[imc]);
+      genpart_trackId.push_back(TrackId[imc]);
     
+      // COLLECTION 2 : TRACK DATA
+      for (Int_t itrk = 0 ; itrk < ntracks_pandoraTrack; itrk++){
+	
+	// there are total of three planes
+	// COLLECTION 3 : PLANE DATA
+	for (Int_t ipln = 0 ; ipln < 3; ipln++){
+	  
+	  // GEANT track ID matched
+	  if (TrackId[imc] != trkidtruth_pandoraTrack[itrk][ipln]) continue;
+	  
+	  // at least good hits
+	  if (ntrkhits_pandoraTrack[itrk][ipln]<5) continue;
+
+	  // evaluate PdgId matches or not
+	  Int_t isMatch = (abs(pdg[imc]) == abs(trkpdgtruth_pandoraTrack[itrk][ipln])) ? 1 : 0;
+	  
+	  // get the dE/dx vs residual L points, and plots on respective PDG histos
+	  // COLLECTION 4 : number of hits of the particular track on the particular plane
+	  for (Int_t ihit=0 ; ihit<ntrkhits_pandoraTrack[itrk][ipln]; ihit++){
+	    // 
+	    if (ipln==0){
+	      // proton
+	      if (abs(pdg[imc]) == 2212 ){
+		
+		if (isMatch){
+		  track_Uplane_proton_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		  track_Uplane_proton_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+		else
+		  {
+		    track_Uplane_proton_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		    track_Uplane_proton_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		  }
+		
+	      }
+	      // kaon
+	      else if (abs(pdg[imc]) == 321){
+		
+		if (isMatch){
+                  track_Uplane_kaon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                  track_Uplane_kaon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+                }
+                else
+                  {
+                    track_Uplane_kaon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                    track_Uplane_kaon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+                  }
+		
+	      }
+	      // pion
+	      else if (abs(pdg[imc]) == 211){
+		
+		if (isMatch){
+                  track_Uplane_pion_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                  track_Uplane_pion_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+                }
+                else
+                  {
+                    track_Uplane_pion_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                    track_Uplane_pion_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+                  }
+	      }
+	      // muon
+	      else if (abs(pdg[imc]) == 13){
+		if (isMatch){
+                  track_Uplane_muon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                  track_Uplane_muon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+                }
+                else
+                  {
+                    track_Uplane_muon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                    track_Uplane_muon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+                  }
+	      }
+
+
+	      
+	      
+	      
+
+	      
+	    } else if (ipln==1){
+	      if (isMatch){
+		track_Vplane_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                track_Vplane_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+	      }
+	      else
+                {
+		  track_Vplane_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                  track_Vplane_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+	    }
+	    else if (ipln==2) {
+	      if (isMatch){
+		track_Wplane_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                track_Wplane_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+	      }
+	      else
+                {
+		  track_Wplane_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+                  track_Wplane_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+	    }
+	  }// number of hits from track on the plane
+	} // 3 plane loop
+      } // number of tracks
+    } // genlist loop
     newtree->Fill();
   } // jentry
 
   //newtree->Fill();
   //newtree->CopyEntries(fChain);
+  
   turnOnBranches(outbranches,newtree);
-  TTree* tout = newtree->CloneTree(0);
-  tout->CopyEntries(newtree);
-  tout->Write();
+  
+  //TTree* tout = newtree->CloneTree(0);
+  //tout->CopyEntries(newtree);
+  //tout->Write();
+  newtree->Write();
   f->Close();
 }
 
 void postproc::Skim()
 {
   if (fChain == 0) return;
+
+  std::vector<std::string> inbranches = makeList("data/inbranch.dat");
+  std::vector<std::string> outbranches = makeList("data/outbranch.dat");
 
   turnOnBranches(inbranches,fChain);
   //Long64_t nentries = fChain->GetEntriesFast();
