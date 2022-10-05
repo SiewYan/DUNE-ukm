@@ -71,23 +71,81 @@ void postproc::Loop()
   std::vector<Int_t> genpart_trackId;
   // 0 : U plane ; 1 : V plane ; 2 : W plane
   //
-  std::vector<Float_t> track_Uplane_cpdg_resrg;
-  std::vector<Float_t> track_Uplane_cpdg_dedx;
+  
+  std::vector<Float_t> track_Uplane_proton_cpdg_resrg;
+  std::vector<Float_t> track_Uplane_proton_cpdg_dedx;
 
-  std::vector<Float_t> track_Uplane_wpdg_resrg;
-  std::vector<Float_t> track_Uplane_wpdg_dedx;
+  std::vector<Float_t> track_Uplane_proton_wpdg_resrg;
+  std::vector<Float_t> track_Uplane_proton_wpdg_dedx;
 
-  std::vector<Float_t> track_Vplane_cpdg_resrg;
-  std::vector<Float_t> track_Vplane_cpdg_dedx;
+  std::vector<Float_t> track_Vplane_proton_cpdg_resrg;
+  std::vector<Float_t> track_Vplane_proton_cpdg_dedx;
 
-  std::vector<Float_t> track_Vplane_wpdg_resrg;
-  std::vector<Float_t> track_Vplane_wpdg_dedx;
+  std::vector<Float_t> track_Vplane_proton_wpdg_resrg;
+  std::vector<Float_t> track_Vplane_proton_wpdg_dedx;
 
-  std::vector<Float_t> track_Wplane_cpdg_resrg;
-  std::vector<Float_t> track_Wplane_cpdg_dedx;
+  std::vector<Float_t> track_Wplane_proton_cpdg_resrg;
+  std::vector<Float_t> track_Wplane_proton_cpdg_dedx;
 
-  std::vector<Float_t> track_Wplane_wpdg_resrg;
-  std::vector<Float_t> track_Wplane_wpdg_dedx;
+  std::vector<Float_t> track_Wplane_proton_wpdg_resrg;
+  std::vector<Float_t> track_Wplane_proton_wpdg_dedx;
+
+  //
+  std::vector<Float_t> track_Uplane_kaon_cpdg_resrg;
+  std::vector<Float_t> track_Uplane_kaon_cpdg_dedx;
+
+  std::vector<Float_t> track_Uplane_kaon_wpdg_resrg;
+  std::vector<Float_t> track_Uplane_kaon_wpdg_dedx;
+
+  std::vector<Float_t> track_Vplane_kaon_cpdg_resrg;
+  std::vector<Float_t> track_Vplane_kaon_cpdg_dedx;
+
+  std::vector<Float_t> track_Vplane_kaon_wpdg_resrg;
+  std::vector<Float_t> track_Vplane_kaon_wpdg_dedx;
+
+  std::vector<Float_t> track_Wplane_kaon_cpdg_resrg;
+  std::vector<Float_t> track_Wplane_kaon_cpdg_dedx;
+
+  std::vector<Float_t> track_Wplane_kaon_wpdg_resrg;
+  std::vector<Float_t> track_Wplane_kaon_wpdg_dedx;
+
+  //
+  std::vector<Float_t> track_Uplane_pion_cpdg_resrg;
+  std::vector<Float_t> track_Uplane_pion_cpdg_dedx;
+
+  std::vector<Float_t> track_Uplane_pion_wpdg_resrg;
+  std::vector<Float_t> track_Uplane_pion_wpdg_dedx;
+
+  std::vector<Float_t> track_Vplane_pion_cpdg_resrg;
+  std::vector<Float_t> track_Vplane_pion_cpdg_dedx;
+
+  std::vector<Float_t> track_Vplane_pion_wpdg_resrg;
+  std::vector<Float_t> track_Vplane_pion_wpdg_dedx;
+
+  std::vector<Float_t> track_Wplane_pion_cpdg_resrg;
+  std::vector<Float_t> track_Wplane_pion_cpdg_dedx;
+
+  std::vector<Float_t> track_Wplane_pion_wpdg_resrg;
+  std::vector<Float_t> track_Wplane_pion_wpdg_dedx;
+
+  //
+  std::vector<Float_t> track_Uplane_muon_cpdg_resrg;
+  std::vector<Float_t> track_Uplane_muon_cpdg_dedx;
+
+  std::vector<Float_t> track_Uplane_muon_wpdg_resrg;
+  std::vector<Float_t> track_Uplane_muon_wpdg_dedx;
+
+  std::vector<Float_t> track_Vplane_muon_cpdg_resrg;
+  std::vector<Float_t> track_Vplane_muon_cpdg_dedx;
+
+  std::vector<Float_t> track_Vplane_muon_wpdg_resrg;
+  std::vector<Float_t> track_Vplane_muon_wpdg_dedx;
+
+  std::vector<Float_t> track_Wplane_muon_cpdg_resrg;
+  std::vector<Float_t> track_Wplane_muon_cpdg_dedx;
+
+  std::vector<Float_t> track_Wplane_muon_wpdg_resrg;
+  std::vector<Float_t> track_Wplane_muon_wpdg_dedx;
 
   // add new branch
   newtree->Branch( "ngenpart" , &ngenpart );
@@ -96,20 +154,69 @@ void postproc::Loop()
   newtree->Branch( "genpart_status" , &genpart_status );
   newtree->Branch( "genpart_trackId" , &genpart_trackId );
 
-  newtree->Branch( "track_Uplane_cpdg_resrg" , &track_Uplane_cpdg_resrg );
-  newtree->Branch( "track_Uplane_cpdg_dedx" , &track_Uplane_cpdg_dedx );
-  newtree->Branch( "track_Uplane_wpdg_resrg" , &track_Uplane_wpdg_resrg );
-  newtree->Branch( "track_Uplane_wpdg_dedx" , &track_Uplane_wpdg_dedx );
+  // proton
+  newtree->Branch( "track_Uplane_proton_cpdg_resrg" , &track_Uplane_proton_cpdg_resrg );
+  newtree->Branch( "track_Uplane_proton_cpdg_dedx" , &track_Uplane_proton_cpdg_dedx );
+  newtree->Branch( "track_Uplane_proton_wpdg_resrg" , &track_Uplane_proton_wpdg_resrg );
+  newtree->Branch( "track_Uplane_proton_wpdg_dedx" , &track_Uplane_proton_wpdg_dedx );
 
-  newtree->Branch( "track_Vplane_cpdg_resrg" , &track_Vplane_cpdg_resrg );
-  newtree->Branch( "track_Vplane_cpdg_dedx" , &track_Vplane_cpdg_dedx );
-  newtree->Branch( "track_Vplane_wpdg_resrg" , &track_Vplane_wpdg_resrg );
-  newtree->Branch( "track_Vplane_wpdg_dedx" , &track_Vplane_wpdg_dedx );
+  newtree->Branch( "track_Vplane_proton_cpdg_resrg" , &track_Vplane_proton_cpdg_resrg );
+  newtree->Branch( "track_Vplane_proton_cpdg_dedx" , &track_Vplane_proton_cpdg_dedx );
+  newtree->Branch( "track_Vplane_proton_wpdg_resrg" , &track_Vplane_proton_wpdg_resrg );
+  newtree->Branch( "track_Vplane_proton_wpdg_dedx" , &track_Vplane_proton_wpdg_dedx );
 
-  newtree->Branch( "track_Wplane_cpdg_resrg" , &track_Wplane_cpdg_resrg );
-  newtree->Branch( "track_Wplane_cpdg_dedx" , &track_Wplane_cpdg_dedx );
-  newtree->Branch( "track_Wplane_wpdg_resrg" , &track_Wplane_wpdg_resrg );
-  newtree->Branch( "track_Wplane_wpdg_dedx" , &track_Wplane_wpdg_dedx );
+  newtree->Branch( "track_Wplane_proton_cpdg_resrg" , &track_Wplane_proton_cpdg_resrg );
+  newtree->Branch( "track_Wplane_proton_cpdg_dedx" , &track_Wplane_proton_cpdg_dedx );
+  newtree->Branch( "track_Wplane_proton_wpdg_resrg" , &track_Wplane_proton_wpdg_resrg );
+  newtree->Branch( "track_Wplane_proton_wpdg_dedx" , &track_Wplane_proton_wpdg_dedx );
+
+  // kaon
+  newtree->Branch( "track_Uplane_kaon_cpdg_resrg" , &track_Uplane_kaon_cpdg_resrg );
+  newtree->Branch( "track_Uplane_kaon_cpdg_dedx" , &track_Uplane_kaon_cpdg_dedx );
+  newtree->Branch( "track_Uplane_kaon_wpdg_resrg" , &track_Uplane_kaon_wpdg_resrg );
+  newtree->Branch( "track_Uplane_kaon_wpdg_dedx" , &track_Uplane_kaon_wpdg_dedx );
+
+  newtree->Branch( "track_Vplane_kaon_cpdg_resrg" , &track_Vplane_kaon_cpdg_resrg );
+  newtree->Branch( "track_Vplane_kaon_cpdg_dedx" , &track_Vplane_kaon_cpdg_dedx );
+  newtree->Branch( "track_Vplane_kaon_wpdg_resrg" , &track_Vplane_kaon_wpdg_resrg );
+  newtree->Branch( "track_Vplane_kaon_wpdg_dedx" , &track_Vplane_kaon_wpdg_dedx );
+
+  newtree->Branch( "track_Wplane_kaon_cpdg_resrg" , &track_Wplane_kaon_cpdg_resrg );
+  newtree->Branch( "track_Wplane_kaon_cpdg_dedx" , &track_Wplane_kaon_cpdg_dedx );
+  newtree->Branch( "track_Wplane_kaon_wpdg_resrg" , &track_Wplane_kaon_wpdg_resrg );
+  newtree->Branch( "track_Wplane_kaon_wpdg_dedx" , &track_Wplane_kaon_wpdg_dedx );
+
+  // pion
+  newtree->Branch( "track_Uplane_pion_cpdg_resrg" , &track_Uplane_pion_cpdg_resrg );
+  newtree->Branch( "track_Uplane_pion_cpdg_dedx" , &track_Uplane_pion_cpdg_dedx );
+  newtree->Branch( "track_Uplane_pion_wpdg_resrg" , &track_Uplane_pion_wpdg_resrg );
+  newtree->Branch( "track_Uplane_pion_wpdg_dedx" , &track_Uplane_pion_wpdg_dedx );
+
+  newtree->Branch( "track_Vplane_pion_cpdg_resrg" , &track_Vplane_pion_cpdg_resrg );
+  newtree->Branch( "track_Vplane_pion_cpdg_dedx" , &track_Vplane_pion_cpdg_dedx );
+  newtree->Branch( "track_Vplane_pion_wpdg_resrg" , &track_Vplane_pion_wpdg_resrg );
+  newtree->Branch( "track_Vplane_pion_wpdg_dedx" , &track_Vplane_pion_wpdg_dedx );
+
+  newtree->Branch( "track_Wplane_pion_cpdg_resrg" , &track_Wplane_pion_cpdg_resrg );
+  newtree->Branch( "track_Wplane_pion_cpdg_dedx" , &track_Wplane_pion_cpdg_dedx );
+  newtree->Branch( "track_Wplane_pion_wpdg_resrg" , &track_Wplane_pion_wpdg_resrg );
+  newtree->Branch( "track_Wplane_pion_wpdg_dedx" , &track_Wplane_pion_wpdg_dedx );
+
+  // muon
+  newtree->Branch( "track_Uplane_muon_cpdg_resrg" , &track_Uplane_muon_cpdg_resrg );
+  newtree->Branch( "track_Uplane_muon_cpdg_dedx" , &track_Uplane_muon_cpdg_dedx );
+  newtree->Branch( "track_Uplane_muon_wpdg_resrg" , &track_Uplane_muon_wpdg_resrg );
+  newtree->Branch( "track_Uplane_muon_wpdg_dedx" , &track_Uplane_muon_wpdg_dedx );
+
+  newtree->Branch( "track_Vplane_muon_cpdg_resrg" , &track_Vplane_muon_cpdg_resrg );
+  newtree->Branch( "track_Vplane_muon_cpdg_dedx" , &track_Vplane_muon_cpdg_dedx );
+  newtree->Branch( "track_Vplane_muon_wpdg_resrg" , &track_Vplane_muon_wpdg_resrg );
+  newtree->Branch( "track_Vplane_muon_wpdg_dedx" , &track_Vplane_muon_wpdg_dedx );
+
+  newtree->Branch( "track_Wplane_muon_cpdg_resrg" , &track_Wplane_muon_cpdg_resrg );
+  newtree->Branch( "track_Wplane_muon_cpdg_dedx" , &track_Wplane_muon_cpdg_dedx );
+  newtree->Branch( "track_Wplane_muon_wpdg_resrg" , &track_Wplane_muon_wpdg_resrg );
+  newtree->Branch( "track_Wplane_muon_wpdg_dedx" , &track_Wplane_muon_wpdg_dedx );
 
   // EVENT LOOP
   Long64_t nbytes = 0, nb = 0;
@@ -237,12 +344,14 @@ void postproc::Loop()
 	  if (ntrkhits_pandoraTrack[itrk][ipln]<5) continue;
 
 	  // evaluate PdgId matches or not
-	  Int_t isMatch = (abs(pdg[imc]) == abs(trkpdgtruth_pandoraTrack[itrk][ipln])) ? 1 : 0;
-
+	  //Int_t isMatch = (abs(pdg[imc]) == abs(trkpdgtruth_pandoraTrack[itrk][ipln])) ? 1 : 0;
+	  Int_t isMatch = (abs(pdg[imc]) == abs(trkpidpdg_pandoraTrack[itrk][ipln])) ? 1 : 0;
+	  
 	  // get the dE/dx vs residual L points, and plots on respective PDG histos
 	  // COLLECTION 4 : number of hits of the particular track on the particular plane
 	  for (Int_t ihit=0 ; ihit<ntrkhits_pandoraTrack[itrk][ipln]; ihit++){
-	    //
+	    
+	    // Uplane
 	    if (ipln==0){
 	      // proton
 	      if (abs(pdg[imc]) == 2212 ){
@@ -256,11 +365,11 @@ void postproc::Loop()
 		    track_Uplane_proton_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
 		    track_Uplane_proton_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
 		  }
-
+		
 	      }
 	      // kaon
 	      else if (abs(pdg[imc]) == 321){
-
+		
 		if (isMatch){
                   track_Uplane_kaon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
                   track_Uplane_kaon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
@@ -270,7 +379,7 @@ void postproc::Loop()
                     track_Uplane_kaon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
                     track_Uplane_kaon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
                   }
-
+		
 	      }
 	      // pion
 	      else if (abs(pdg[imc]) == 211){
@@ -297,133 +406,126 @@ void postproc::Loop()
                     track_Uplane_muon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
                   }
 	      }
-        //
-        else if (ipln==1){
-         // proton
-         if (abs(pdg[imc]) == 2212 ){
-
-     if (isMatch){
-       track_Uplane_proton_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-       track_Uplane_proton_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-     }
-     else
-       {
-         track_Uplane_proton_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-         track_Uplane_proton_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-       }
-
-         }
-         // kaon
-         else if (abs(pdg[imc]) == 321){
-
-     if (isMatch){
-                    track_Uplane_kaon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                    track_Uplane_kaon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                  }
-                  else
-                    {
-                      track_Uplane_kaon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                      track_Uplane_kaon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                    }
-
-         }
-         // pion
-         else if (abs(pdg[imc]) == 211){
-
-     if (isMatch){
-                    track_Uplane_pion_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                    track_Uplane_pion_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                  }
-                  else
-                    {
-                      track_Uplane_pion_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                      track_Uplane_pion_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                    }
-         }
-         // muon
-         else if (abs(pdg[imc]) == 13){
-     if (isMatch){
-                    track_Uplane_muon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                    track_Uplane_muon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                  }
-                  else
-                    {
-                      track_Uplane_muon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                      track_Uplane_muon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                    }
-         }
-
-
-         // third plane
-         else if (ipln==2){
-           // proton
-           if (abs(pdg[imc]) == 2212 ){
-
-       if (isMatch){
-         track_Uplane_proton_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-         track_Uplane_proton_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-       }
-       else
-         {
-           track_Uplane_proton_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-           track_Uplane_proton_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-         }
-
-           }
-           // kaon
-           else if (abs(pdg[imc]) == 321){
-
-       if (isMatch){
-                     track_Uplane_kaon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                     track_Uplane_kaon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                   }
-                   else
-                     {
-                       track_Uplane_kaon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                       track_Uplane_kaon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                     }
-
-           }
-           // pion
-           else if (abs(pdg[imc]) == 211){
-
-       if (isMatch){
-                     track_Uplane_pion_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                     track_Uplane_pion_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                   }
-                   else
-                     {
-                       track_Uplane_pion_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                       track_Uplane_pion_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                     }
-           }
-           // muon
-           else if (abs(pdg[imc]) == 13){
-       if (isMatch){
-                     track_Uplane_muon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                     track_Uplane_muon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                   }
-                   else
-                     {
-                       track_Uplane_muon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
-                       track_Uplane_muon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
-                     }
-           }
+	    }
+	    // Vplane
+	    else if (ipln==1){
+	      // proton
+	      if (abs(pdg[imc]) == 2212 ){
+		
+		if (isMatch){
+		  track_Vplane_proton_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		  track_Vplane_proton_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+		else
+		  {
+		    track_Vplane_proton_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		    track_Vplane_proton_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		  }
+		
+	      }
+	      // kaon
+	      else if (abs(pdg[imc]) == 321){
+		
+		if (isMatch){
+		  track_Vplane_kaon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		  track_Vplane_kaon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+		else
+		  {
+		    track_Vplane_kaon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		    track_Vplane_kaon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		  }
+		
+	      }
+	      // pion
+	      else if (abs(pdg[imc]) == 211){
+		
+		if (isMatch){
+		  track_Vplane_pion_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		  track_Vplane_pion_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+		else
+		  {
+		    track_Vplane_pion_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		    track_Vplane_pion_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		  }
+	      }
+	      // muon
+	      else if (abs(pdg[imc]) == 13){
+		if (isMatch){
+		  track_Vplane_muon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		  track_Vplane_muon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+		else
+		  {
+		    track_Vplane_muon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		    track_Vplane_muon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		  }
+	      }
+	    }
+	    // W plane
+	    else if (ipln==2){
+	      // proton
+	      if (abs(pdg[imc]) == 2212 ){
+		
+		if (isMatch){
+		  track_Wplane_proton_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		  track_Wplane_proton_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+		else
+		  {
+		    track_Wplane_proton_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		    track_Wplane_proton_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		  }
+		
+	      }
+	      // kaon
+	      else if (abs(pdg[imc]) == 321){
+		
+		if (isMatch){
+		  track_Wplane_kaon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		  track_Wplane_kaon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+		else
+		  {
+		    track_Wplane_kaon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		    track_Wplane_kaon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		  }
+		
+	      }
+	      // pion
+	      else if (abs(pdg[imc]) == 211){
+		
+		if (isMatch){
+		  track_Wplane_pion_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		  track_Wplane_pion_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+		else
+		  {
+		    track_Wplane_pion_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		    track_Wplane_pion_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		  }
+	      }
+	      // muon
+	      else if (abs(pdg[imc]) == 13){
+		if (isMatch){
+		  track_Wplane_muon_cpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		  track_Wplane_muon_cpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		}
+		else
+		  {
+		    track_Wplane_muon_wpdg_resrg.push_back(trkresrg_pandoraTrack[itrk][ipln][ihit]);
+		    track_Wplane_muon_wpdg_dedx.push_back(trkdedx_pandoraTrack[itrk][ipln][ihit]);
+		  }
+	      }
+	    }
 	  }// number of hits from track on the plane
 	} // 3 plane loop
       } // number of tracks
     } // genlist loop
     newtree->Fill();
   } // jentry
-
-  //newtree->Fill();
-  //newtree->CopyEntries(fChain);
-
   turnOnBranches(outbranches,newtree);
-
-  //TTree* tout = newtree->CloneTree(0);
-  //tout->CopyEntries(newtree);
-  //tout->Write();
   newtree->Write();
   f->Close();
 }
